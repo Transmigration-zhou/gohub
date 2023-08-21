@@ -9,37 +9,27 @@ type SignupPhoneExistRequest struct {
 	Phone string `json:"phone,omitempty" valid:"phone"`
 }
 
-func ValidateSignupPhoneExist(data interface{}, c *gin.Context) map[string][]string {
+func SignupPhoneExist(data interface{}, c *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"phone": []string{"required", "digits:11"},
 	}
-
 	messages := govalidator.MapData{
 		"phone": []string{
 			"required:手机号为必填项，参数名称 phone",
 			"digits:手机号长度必须为 11 位的数字",
 		},
 	}
-
-	opts := govalidator.Options{
-		Data:          data,
-		Rules:         rules,
-		TagIdentifier: "valid",
-		Messages:      messages,
-	}
-
-	return govalidator.New(opts).ValidateStruct()
+	return validate(data, rules, messages)
 }
 
 type SignupEmailExistRequest struct {
 	Email string `json:"email,omitempty" valid:"email"`
 }
 
-func ValidateSignupEmailExist(data interface{}, c *gin.Context) map[string][]string {
+func SignupEmailExist(data interface{}, c *gin.Context) map[string][]string {
 	rules := govalidator.MapData{
 		"email": []string{"required", "min:4", "max:30", "email"},
 	}
-
 	messages := govalidator.MapData{
 		"email": []string{
 			"required:Email 为必填项",
@@ -48,13 +38,5 @@ func ValidateSignupEmailExist(data interface{}, c *gin.Context) map[string][]str
 			"email:Email 格式不正确，请提供有效的邮箱地址",
 		},
 	}
-
-	opts := govalidator.Options{
-		Data:          data,
-		Rules:         rules,
-		TagIdentifier: "valid", // 模型中的 Struct 标签标识符
-		Messages:      messages,
-	}
-
-	return govalidator.New(opts).ValidateStruct()
+	return validate(data, rules, messages)
 }
