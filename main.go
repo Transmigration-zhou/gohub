@@ -25,7 +25,6 @@ func main() {
 
 		// rootCmd 的所有子命令都会执行以下代码
 		PersistentPreRun: func(command *cobra.Command, args []string) {
-
 			// 配置初始化，依赖命令行 --env 参数
 			config.InitConfig(cmd.Env)
 
@@ -37,6 +36,9 @@ func main() {
 
 			// 初始化 Redis
 			bootstrap.SetupRedis()
+
+			// 初始化缓存
+			bootstrap.SetupCache()
 		},
 	}
 
