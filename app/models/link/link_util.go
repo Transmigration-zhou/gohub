@@ -2,8 +2,11 @@ package link
 
 import (
 	"gohub/pkg/app"
+	"gohub/pkg/cache"
 	"gohub/pkg/database"
+	"gohub/pkg/helpers"
 	"gohub/pkg/paginator"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,5 +40,20 @@ func Paginate(c *gin.Context, perPage int) (links []Link, paging paginator.Pagin
 		app.V1URL(database.TableName(&Link{})),
 		perPage,
 	)
+	return
+}
+
+func AllCached() (links []Link) {
+	cacheKey := "links:all"
+	expireTime := 120 * time.Minute
+	cache.GetObject(cacheKey, &links)
+
+	if helpers.Empty(links) {
+		links = All()
+		if helpers.Empty(links) {
+			return links
+		}
+		cache.Set(cacheKey, links, expireTime)
+	}
 	return
 }
