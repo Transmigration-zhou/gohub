@@ -28,7 +28,6 @@ func (ctrl *{{StructNamePlural}}Controller) Show(c *gin.Context) {
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Store(c *gin.Context) {
-
     request := requests.{{StructName}}Request{}
     if ok := requests.Validate(c, &request, requests.{{StructName}}Save); !ok {
         return
@@ -46,7 +45,6 @@ func (ctrl *{{StructNamePlural}}Controller) Store(c *gin.Context) {
 }
 
 func (ctrl *{{StructNamePlural}}Controller) Update(c *gin.Context) {
-
     {{VariableName}}Model := {{PackageName}}.Get(c.Param("id"))
     if {{VariableName}}Model.ID == 0 {
         response.Abort404(c)
