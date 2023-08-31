@@ -5,6 +5,7 @@ import (
 	"github.com/thedevsaddam/govalidator"
 	"gohub/app/requests/validators"
 	"gohub/pkg/auth"
+	"mime/multipart"
 )
 
 type UserProfileRequest struct {
@@ -140,4 +141,23 @@ func UserPasswordUpdate(data interface{}, c *gin.Context) map[string][]string {
 	errs := validate(data, rules, messages)
 	_data := data.(*UserPasswordRequest)
 	return validators.ValidatePasswordConfirm(_data.NewPassword, _data.NewPasswordConfirm, errs)
+}
+
+type UserAvatarRequest struct {
+	Avatar *multipart.FileHeader `valid:"avatar" form:"avatar"`
+}
+
+func UserAvatarUpdate(data interface{}, c *gin.Context) map[string][]string {
+	rules := govalidator.MapData{
+		"file:avatar": []string{"ext:png,jpg,jpeg", "size:20971520", "required"},
+	}
+	messages := govalidator.MapData{
+		"file:avatar": []string{
+			"ext:ext头像只能上传 png, jpg, jpeg 任意一种的图片",
+			"size:头像文件最大不能超过 20MB",
+			"required:必须上传图片",
+		},
+	}
+
+	return validateFile(c, data, rules, messages)
 }
