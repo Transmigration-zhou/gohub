@@ -39,7 +39,7 @@ func UserProfileUpdate(data interface{}, c *gin.Context) map[string][]string {
 	return validate(data, rules, messages)
 }
 
-type UserUpdateEmailRequest struct {
+type UserEmailRequest struct {
 	Email      string `json:"email,omitempty" valid:"email"`
 	VerifyCode string `json:"verify_code,omitempty" valid:"verify_code"`
 }
@@ -72,11 +72,11 @@ func UserEmailUpdate(data interface{}, c *gin.Context) map[string][]string {
 	}
 
 	errs := validate(data, rules, messages)
-	_data := data.(*UserUpdateEmailRequest)
+	_data := data.(*UserEmailRequest)
 	return validators.ValidateVerifyCode(_data.Email, _data.VerifyCode, errs)
 }
 
-type UserUpdatePhoneRequest struct {
+type UserPhoneRequest struct {
 	Phone      string `json:"phone,omitempty" valid:"phone"`
 	VerifyCode string `json:"verify_code,omitempty" valid:"verify_code"`
 }
@@ -106,6 +106,38 @@ func UserPhoneUpdate(data interface{}, c *gin.Context) map[string][]string {
 	}
 
 	errs := validate(data, rules, messages)
-	_data := data.(*UserUpdatePhoneRequest)
+	_data := data.(*UserPhoneRequest)
 	return validators.ValidateVerifyCode(_data.Phone, _data.VerifyCode, errs)
+}
+
+type UserPasswordRequest struct {
+	Password           string `valid:"password" json:"password,omitempty"`
+	NewPassword        string `valid:"new_password" json:"new_password,omitempty"`
+	NewPasswordConfirm string `valid:"new_password_confirm" json:"new_password_confirm,omitempty"`
+}
+
+func UserPasswordUpdate(data interface{}, c *gin.Context) map[string][]string {
+	rules := govalidator.MapData{
+		"password":             []string{"required", "min:6"},
+		"new_password":         []string{"required", "min:6"},
+		"new_password_confirm": []string{"required", "min:6"},
+	}
+	messages := govalidator.MapData{
+		"password": []string{
+			"required:密码为必填项",
+			"min:密码长度需大于 6",
+		},
+		"new_password": []string{
+			"required:密码为必填项",
+			"min:密码长度需大于 6",
+		},
+		"new_password_confirm": []string{
+			"required:确认密码框为必填项",
+			"min:确认密码长度需大于 6",
+		},
+	}
+
+	errs := validate(data, rules, messages)
+	_data := data.(*UserPasswordRequest)
+	return validators.ValidatePasswordConfirm(_data.NewPassword, _data.NewPasswordConfirm, errs)
 }

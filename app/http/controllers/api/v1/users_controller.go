@@ -52,7 +52,7 @@ func (ctrl *UsersController) UpdateProfile(c *gin.Context) {
 }
 
 func (ctrl *UsersController) UpdateEmail(c *gin.Context) {
-	request := requests.UserUpdateEmailRequest{}
+	request := requests.UserEmailRequest{}
 	if ok := requests.Validate(c, &request, requests.UserEmailUpdate); !ok {
 		return
 	}
@@ -68,7 +68,7 @@ func (ctrl *UsersController) UpdateEmail(c *gin.Context) {
 }
 
 func (ctrl *UsersController) UpdatePhone(c *gin.Context) {
-	request := requests.UserUpdatePhoneRequest{}
+	request := requests.UserPhoneRequest{}
 	if ok := requests.Validate(c, &request, requests.UserPhoneUpdate); !ok {
 		return
 	}
@@ -80,5 +80,22 @@ func (ctrl *UsersController) UpdatePhone(c *gin.Context) {
 		response.Success(c)
 	} else {
 		response.Abort500(c, "更新失败，请稍后尝试~")
+	}
+}
+
+func (ctrl *UsersController) UpdatePassword(c *gin.Context) {
+	request := requests.UserPasswordRequest{}
+	if ok := requests.Validate(c, &request, requests.UserPasswordUpdate); !ok {
+		return
+	}
+
+	currentUser := auth.CurrentUser(c)
+	_, err := auth.Attempt(currentUser.Name, request.Password)
+	if err != nil {
+		response.Unauthorized(c, "原密码不正确")
+	} else {
+		currentUser.Password = request.NewPassword
+		currentUser.Save()
+		response.Success(c)
 	}
 }
