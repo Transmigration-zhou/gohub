@@ -5,11 +5,17 @@ import (
 	controllers "gohub/app/http/controllers/api/v1"
 	"gohub/app/http/controllers/api/v1/auth"
 	"gohub/app/http/middlewares"
+	"gohub/pkg/config"
 )
 
 // RegisterAPIRoutes 注册网页相关路由
 func RegisterAPIRoutes(r *gin.Engine) {
-	v1 := r.Group("/v1")
+	var v1 *gin.RouterGroup
+	if len(config.Get("app.api_domain")) == 0 {
+		v1 = r.Group("/api/v1")
+	} else {
+		v1 = r.Group("/v1")
+	}
 	// 全局限流中间件：每小时限流 200 次
 	v1.Use(middlewares.LimitIP("200-H"))
 	{
